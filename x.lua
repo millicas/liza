@@ -12,17 +12,18 @@ local udim2, udim = UDim2.new, UDim.new
 local rgb = Color3.fromRGB
 
 local Colors = {
-    Primary = rgb(0, 112, 243),
-    PrimaryHover = rgb(0, 102, 230),
-    Background = rgb(250, 250, 250),
-    Surface = rgb(255, 255, 255),
-    Border = rgb(230, 230, 230),
-    TextPrimary = rgb(0, 0, 0),
-    TextSecondary = rgb(100, 100, 100),
-    TextTertiary = rgb(150, 150, 150),
-    Divider = rgb(240, 240, 240),
-    Hover = rgb(248, 248, 248)
+    Primary = rgb(0, 153, 255),       -- Framer blue
+    PrimaryHover = rgb(0, 102, 204),  -- darker blue for hover
+    Background = rgb(26, 26, 26),     -- dark background
+    Surface = rgb(40, 40, 40),        -- panels / cards
+    Border = rgb(70, 70, 70),         -- subtle borders
+    TextPrimary = rgb(230, 230, 230), -- main text
+    TextSecondary = rgb(160, 160, 160), -- secondary text
+    TextTertiary = rgb(120, 120, 120),  -- tertiary / muted text
+    Divider = rgb(60, 60, 60),        -- divider lines
+    Hover = rgb(50, 50, 50)           -- hover background for panels/buttons
 }
+
 
 local Modern = {}
 Modern.__index = Modern
