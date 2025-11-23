@@ -11,19 +11,19 @@ local udim2, udim = UDim2.new, UDim.new
 local rgb = Color3.fromRGB
 
 local Colors = {
-    Accent = rgb(0, 102, 255),
-    AccentDark = rgb(0, 85, 220),
-    Background = rgb(255, 255, 255),
-    SidebarBg = rgb(250, 250, 250),
-    ElementBg = rgb(255, 255, 255),
-    InlineBg = rgb(245, 245, 247),
-    Border = rgb(230, 230, 235),
-    BorderDark = rgb(200, 200, 210),
-    Text = rgb(20, 20, 30),
-    TextDark = rgb(100, 100, 110),
-    TextDarker = rgb(150, 150, 160),
-    Circle = rgb(255, 255, 255),
-    Icon = rgb(120, 120, 130)
+	Accent = rgb(255, 255, 255),
+	AccentDark = rgb(200, 200, 200),
+	Background = rgb(16, 18, 18),
+	SidebarBg = rgb(21, 24, 24),
+	ElementBg = rgb(30, 34, 34),
+	InlineBg = rgb(21, 24, 24),
+	Border = rgb(30, 34, 34),
+	BorderDark = rgb(56, 62, 62),
+	Text = rgb(255, 255, 255),
+	TextDark = rgb(100, 100, 100),
+	TextDarker = rgb(75, 75, 75),
+	Circle = rgb(200, 200, 200),
+	Icon = rgb(100, 100, 100)
 }
 
 local Modern = {}
