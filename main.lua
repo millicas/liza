@@ -294,7 +294,7 @@ function ModernUILibrary:CreateButton(container, text, callback)
 	if not Frame then return end
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(1, -15, 1, 0)
+	Label.Size = UDim2.new(1, -35, 1, 0)
 	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
