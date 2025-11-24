@@ -1,4 +1,6 @@
--- WAVE EXECUTOR UI (SYNAPSE STYLE 32PX) -- BY SPDM TEAM (PATCHEd: sections + groups + spacing + bg)
+-- WAVE EXECUTOR UI (UPDATED) -- 38px elements + main content background restored
+-- By SPDM TEAM (patched for 38px element height, improved spacing, content BG)
+
 local ModernUILibrary = {}
 ModernUILibrary.__index = ModernUILibrary
 
@@ -6,8 +8,9 @@ ModernUILibrary.Themes = {
 	Dark = {
 		Accent = Color3.fromRGB(30, 34, 34),
 		Background = Color3.fromRGB(19, 19, 21),
+		ContentBg = Color3.fromRGB(17, 17, 18), -- main content area background
 		SidebarBg = Color3.fromRGB(18, 18, 20),
-		ElementBg = Color3.fromRGB(23, 23, 25),
+		ElementBg = Color3.fromRGB(24, 24, 26),
 		InlineBg = Color3.fromRGB(29, 29, 31),
 		Border = Color3.fromRGB(65, 65, 70),
 		Text = Color3.fromRGB(255, 255, 255),
@@ -16,9 +19,11 @@ ModernUILibrary.Themes = {
 	}
 }
 
+-- element height constant (38px as requested)
+local ELEMENT_HEIGHT = 38
+
 -- Helper: resolve container (tab or group) to a Frame where elements should be parented
 local function resolveContainer(container)
-	-- container may be: tab table { Button, Content }, group table { Frame/Content }, or just a Frame
 	if type(container) ~= "table" then
 		-- assume it's a Frame
 		return container
@@ -49,8 +54,8 @@ function ModernUILibrary.new(title, theme)
 
 	-- WINDOW
 	self.Window = Instance.new("Frame")
-	self.Window.Size = UDim2.new(0, 880, 0, 520)
-	self.Window.Position = UDim2.new(0.5, -440, 0.5, -260)
+	self.Window.Size = UDim2.new(0, 880, 0, 560) -- increased to fit 38px items nicely
+	self.Window.Position = UDim2.new(0.5, -440, 0.5, -280)
 	self.Window.AnchorPoint = Vector2.new(0.5,0.5)
 	self.Window.BackgroundColor3 = self.Theme.Background
 	self.Window.BorderSizePixel = 0
@@ -64,8 +69,8 @@ function ModernUILibrary.new(title, theme)
 	-- SHADOW (parented to ScreenGui so Window ClipsDescendants won't cut it)
 	local Shadow = Instance.new("ImageLabel", self.ScreenGui)
 	Shadow.Name = "Shadow"
-	Shadow.Size = UDim2.new(1, 40, 1, 40)
-	Shadow.Position = UDim2.new(0.5, -20, 0.5, -20)
+	Shadow.Size = UDim2.new(1, 48, 1, 48)
+	Shadow.Position = UDim2.new(0.5, -24, 0.5, -24)
 	Shadow.AnchorPoint = Vector2.new(0.5,0.5)
 	Shadow.BackgroundTransparency = 1
 	Shadow.Image = "rbxassetid://2615687895"
@@ -77,13 +82,13 @@ function ModernUILibrary.new(title, theme)
 
 	-- HEADER
 	local Header = Instance.new("Frame", self.Window)
-	Header.Size = UDim2.new(1, 0, 0, 50)
+	Header.Size = UDim2.new(1, 0, 0, 52)
 	Header.BackgroundColor3 = self.Theme.Background
 	Header.BorderSizePixel = 0
 
 	local Title = Instance.new("TextLabel", Header)
 	Title.Position = UDim2.new(0, 16, 0, 0)
-	Title.Size = UDim2.new(0, 300, 1, 0)
+	Title.Size = UDim2.new(0, 340, 1, 0)
 	Title.BackgroundTransparency = 1
 	Title.Text = title or "Wave UI"
 	Title.Font = Enum.Font.GothamBold
@@ -92,15 +97,15 @@ function ModernUILibrary.new(title, theme)
 	Title.TextXAlignment = Enum.TextXAlignment.Left
 
 	local X = Instance.new("TextButton", Header)
-	X.Size = UDim2.new(0, 32, 0, 32)
-	X.Position = UDim2.new(1, -10, 0.5, 0)
+	X.Size = UDim2.new(0, 34, 0, 34)
+	X.Position = UDim2.new(1, -12, 0.5, 0)
 	X.AnchorPoint = Vector2.new(1, .5)
 	X.BackgroundColor3 = self.Theme.InlineBg
 	X.Text = "X"
 	X.Font = Enum.Font.GothamMedium
 	X.TextSize = 14
 	X.TextColor3 = self.Theme.Text
-	Instance.new("UICorner", X).CornerRadius = UDim.new(0, 4)
+	Instance.new("UICorner", X).CornerRadius = UDim.new(0, 6)
 	Instance.new("UIStroke", X).Color = self.Theme.Border
 	X.MouseButton1Click:Connect(function()
 		self.Window.Visible = not self.Window.Visible
@@ -108,8 +113,9 @@ function ModernUILibrary.new(title, theme)
 
 	-- MAIN
 	local Main = Instance.new("Frame", self.Window)
-	Main.Position = UDim2.new(0, 0, 0, 50)
-	Main.Size = UDim2.new(1, 0, 1, -50)
+	Main.Name = "Main"
+	Main.Position = UDim2.new(0, 0, 0, 52)
+	Main.Size = UDim2.new(1, 0, 1, -52)
 	Main.BackgroundTransparency = 1
 	Main.ClipsDescendants = true
 
@@ -129,35 +135,58 @@ function ModernUILibrary.new(title, theme)
 	TabList.SortOrder = Enum.SortOrder.LayoutOrder
 
 	-- CONTENT AREA
-	self.ContentArea = Instance.new("ScrollingFrame", Main)
+	self.ContentArea = Instance.new("Frame", Main) -- changed from ScrollingFrame to Frame containing background + scrolling content
+	self.ContentArea.Name = "ContentArea"
 	self.ContentArea.Position = UDim2.new(0, 200, 0, 0)
 	self.ContentArea.Size = UDim2.new(1, -200, 1, 0)
-	self.ContentArea.CanvasSize = UDim2.new(0, 0, 0, 0)
-	self.ContentArea.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	self.ContentArea.ScrollBarThickness = 4
+	self.ContentArea.BackgroundColor3 = self.Theme.ContentBg -- main content background restored
 	self.ContentArea.BorderSizePixel = 0
-	self.ContentArea.BackgroundColor3 = self.Theme.Background
+	Instance.new("UICorner", self.ContentArea).CornerRadius = UDim.new(0, 10)
+	local contentStroke = Instance.new("UIStroke", self.ContentArea)
+	contentStroke.Color = self.Theme.Border
+	contentStroke.Thickness = 1
 	self.ContentArea.ClipsDescendants = true
 
+	-- Background image inside content area (zindex 0)
 	local BG = Instance.new("ImageLabel", self.ContentArea)
 	BG.Name = "Background"
 	BG.Image = "rbxassetid://80547362214007"
 	BG.ImageTransparency = 0.92
 	BG.Size = UDim2.new(1, 0, 1, 0)
 	BG.BackgroundTransparency = 1
-	BG.ZIndex = 0
+	BG.ZIndex = 1
 	BG.ScaleType = Enum.ScaleType.Crop
 
-	local Content = Instance.new("Frame", self.ContentArea)
+	-- Scrolling container for elements (on top of BG)
+	self.ContentScroller = Instance.new("ScrollingFrame", self.ContentArea)
+	self.ContentScroller.Name = "ContentScroller"
+	self.ContentScroller.Size = UDim2.new(1, 0, 1, 0)
+	self.ContentScroller.Position = UDim2.new(0, 0, 0, 0)
+	self.ContentScroller.BackgroundTransparency = 1
+	self.ContentScroller.BorderSizePixel = 0
+	self.ContentScroller.ScrollBarThickness = 6
+	self.ContentScroller.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	self.ContentScroller.CanvasSize = UDim2.new(0,0,0,0)
+	self.ContentScroller.ClipsDescendants = true
+	self.ContentScroller.ZIndex = 2
+
+	-- inner content frame where elements are parented
+	local Content = Instance.new("Frame", self.ContentScroller)
 	Content.Name = "Content"
 	Content.Position = UDim2.new(0, 12, 0, 12)
-	Content.Size = UDim2.new(1, -24, 1, -24)
+	Content.Size = UDim2.new(1, -24, 0, 10)
 	Content.BackgroundTransparency = 1
-	Content.ZIndex = 2
+	Content.ZIndex = 3
 
 	local ContentLayout = Instance.new("UIListLayout", Content)
 	ContentLayout.Padding = UDim.new(0, 10)
 	ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	-- auto expand canvas
+	ContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		self.ContentScroller.CanvasSize = UDim2.new(0, 0, 0, ContentLayout.AbsoluteContentSize.Y + 24)
+		Content.Size = UDim2.new(1, -24, 0, ContentLayout.AbsoluteContentSize.Y + 4)
+	end)
 
 	self.Content = Content
 	self.TabHolderFrame = TabHolder
@@ -199,7 +228,7 @@ function ModernUILibrary:CreateTab(name)
 
 	local TabBtn = Instance.new("TextButton")
 	TabBtn.Text = name
-	TabBtn.Size = UDim2.new(1, -12, 0, 38)
+	TabBtn.Size = UDim2.new(1, -12, 0, 40)
 	TabBtn.Position = UDim2.new(0, 6, 0, 0)
 	TabBtn.BackgroundColor3 = self.Theme.SidebarBg
 	TabBtn.Font = Enum.Font.GothamMedium
@@ -217,7 +246,7 @@ function ModernUILibrary:CreateTab(name)
 	TabContent.BackgroundTransparency = 1
 	TabContent.Visible = false
 	local list = Instance.new("UIListLayout", TabContent)
-	list.Padding = UDim.new(0, 8)
+	list.Padding = UDim.new(0, 10)
 	list.SortOrder = Enum.SortOrder.LayoutOrder
 
 	tab.Button = TabBtn
@@ -243,15 +272,15 @@ function ModernUILibrary:CreateTab(name)
 	return tab
 end
 
--- BASE element creator (32px compact) - accepts tab or group or Frame
+-- BASE element creator (38px compact) - accepts tab or group or Frame
 local function CreateBase(self, container)
 	local parent = resolveContainer(container)
 	if not parent then return nil end
 	local Frame = Instance.new("Frame", parent)
-	Frame.Size = UDim2.new(1, 0, 0, 32)
+	Frame.Size = UDim2.new(1, 0, 0, ELEMENT_HEIGHT)
 	Frame.BackgroundColor3 = self.Theme.ElementBg
 	Frame.BorderSizePixel = 0
-	Frame.BackgroundTransparency = 0.03 -- slight transparency so BG shows subtly
+	Frame.BackgroundTransparency = 0.04 -- slight transparency so BG shows subtly
 	Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 6)
 	local stroke = Instance.new("UIStroke", Frame)
 	stroke.Color = self.Theme.Border
@@ -265,11 +294,11 @@ function ModernUILibrary:CreateButton(container, text, callback)
 	if not Frame then return end
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(1, -10, 1, 0)
-	Label.Position = UDim2.new(0, 10, 0, 0)
+	Label.Size = UDim2.new(1, -12, 1, 0)
+	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
-	Label.TextSize = 14
+	Label.TextSize = 15
 	Label.TextColor3 = self.Theme.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -289,27 +318,27 @@ function ModernUILibrary:CreateToggle(container, text, default, callback)
 	if not Frame then return end
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(1, -60, 1, 0)
-	Label.Position = UDim2.new(0, 10, 0, 0)
+	Label.Size = UDim2.new(1, -80, 1, 0)
+	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
-	Label.TextSize = 14
+	Label.TextSize = 15
 	Label.TextColor3 = self.Theme.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 
 	local Toggle = Instance.new("Frame", Frame)
-	Toggle.Size = UDim2.new(0, 36, 0, 18)
-	Toggle.Position = UDim2.new(1, -46, 0.5, 0)
+	Toggle.Size = UDim2.new(0, 40, 0, 22)
+	Toggle.Position = UDim2.new(1, -60, 0.5, 0)
 	Toggle.AnchorPoint = Vector2.new(0, .5)
 	Toggle.BackgroundColor3 = self.Theme.InlineBg
-	Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 9)
+	Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 11)
 
 	local Ball = Instance.new("Frame", Toggle)
-	Ball.Size = UDim2.new(0, 14, 0, 14)
+	Ball.Size = UDim2.new(0, 18, 0, 18)
 	Ball.Position = UDim2.new(0, 2, 0.5, 0)
 	Ball.AnchorPoint = Vector2.new(0, .5)
 	Ball.BackgroundColor3 = self.Theme.Circle
-	Instance.new("UICorner", Ball).CornerRadius = UDim.new(0, 7)
+	Instance.new("UICorner", Ball).CornerRadius = UDim.new(0, 9)
 
 	local Btn = Instance.new("TextButton", Frame)
 	Btn.BackgroundTransparency = 1
@@ -321,7 +350,7 @@ function ModernUILibrary:CreateToggle(container, text, default, callback)
 	local function Update()
 		if state then
 			Toggle.BackgroundColor3 = self.Theme.Accent
-			Ball.Position = UDim2.new(1, -16, 0.5, 0)
+			Ball.Position = UDim2.new(1, -20, 0.5, 0)
 		else
 			Toggle.BackgroundColor3 = self.Theme.InlineBg
 			Ball.Position = UDim2.new(0, 2, 0.5, 0)
@@ -347,42 +376,42 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(0.45, -14, 1, 0)
-	Label.Position = UDim2.new(0, 10, 0, 0)
+	Label.Size = UDim2.new(0.42, -12, 1, 0)
+	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
-	Label.TextSize = 14
+	Label.TextSize = 15
 	Label.TextColor3 = self.Theme.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 
 	local Val = Instance.new("TextLabel", Frame)
 	Val.Text = tostring(default)
-	Val.Size = UDim2.new(0.25, -14, 1, 0)
-	Val.Position = UDim2.new(0.75, 0, 0, 0)
+	Val.Size = UDim2.new(0.20, -12, 1, 0)
+	Val.Position = UDim2.new(0.78, 0, 0, 0)
 	Val.BackgroundTransparency = 1
 	Val.Font = Enum.Font.GothamMedium
-	Val.TextSize = 14
+	Val.TextSize = 15
 	Val.TextColor3 = self.Theme.Text
 	Val.TextXAlignment = Enum.TextXAlignment.Right
 
 	local Track = Instance.new("Frame", Frame)
-	Track.Size = UDim2.new(1, -28, 0, 4)
-	Track.Position = UDim2.new(0, 10, 1, -9)
+	Track.Size = UDim2.new(1, -36, 0, 6)
+	Track.Position = UDim2.new(0, 12, 1, -11)
 	Track.BackgroundColor3 = self.Theme.InlineBg
-	Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 2)
+	Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 3)
 
 	local Fill = Instance.new("Frame", Track)
 	Fill.Size = UDim2.new(0, 0, 1, 0)
 	Fill.BackgroundColor3 = self.Theme.Text
-	Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 2)
+	Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 3)
 
 	local Knob = Instance.new("ImageButton", Track)
-	Knob.Size = UDim2.new(0, 12, 0, 12)
+	Knob.Size = UDim2.new(0, 14, 0, 14)
 	Knob.Position = UDim2.new(0, 0, 0.5, 0)
 	Knob.AnchorPoint = Vector2.new(0.5, 0.5)
 	Knob.Image = ""
 	Knob.BackgroundColor3 = self.Theme.Circle
-	Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 6)
+	Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 7)
 	local knobStroke = Instance.new("UIStroke", Knob)
 	knobStroke.Color = self.Theme.Border
 
@@ -415,10 +444,13 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 		if inp.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
 	end)
 
-	-- initialize
+	-- initialize position after absolute sizing
 	coroutine.wrap(function()
-		wait()
-		updateFromX(Track.AbsolutePosition.X + (Track.AbsoluteSize.X * ((default - min) / math.max(1, (max - min)))))
+		repeat wait() until Track.AbsoluteSize.X > 2
+		local rel = 0
+		if max - min ~= 0 then rel = (default - min) / (max - min) end
+		Fill.Size = UDim2.new(rel, 0, 1, 0)
+		Knob.Position = UDim2.new(rel, 0, 0.5, 0)
 	end)()
 
 	return Frame, function(v) value = v; updateFromX(Track.AbsolutePosition.X + (Track.AbsoluteSize.X * ((v - min) / math.max(1, (max - min))))) end, function() return value end
@@ -431,18 +463,18 @@ function ModernUILibrary:CreateKeybind(container, text, defaultKey, callback)
 
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(1, -110, 1, 0)
-	Label.Position = UDim2.new(0, 10, 0, 0)
+	Label.Size = UDim2.new(1, -140, 1, 0)
+	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
-	Label.TextSize = 14
+	Label.TextSize = 15
 	Label.TextColor3 = self.Theme.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 
 	local Btn = Instance.new("TextButton", Frame)
 	Btn.Text = defaultKey or "F4"
-	Btn.Size = UDim2.new(0, 64, 0, 24)
-	Btn.Position = UDim2.new(1, -78, 0.5, 0)
+	Btn.Size = UDim2.new(0, 72, 0, 28)
+	Btn.Position = UDim2.new(1, -88, 0.5, 0)
 	Btn.AnchorPoint = Vector2.new(0, .5)
 	Btn.BackgroundColor3 = self.Theme.InlineBg
 	Btn.Font = Enum.Font.GothamMedium
@@ -472,12 +504,11 @@ end
 
 -- SECTION (Synapse X style header)
 function ModernUILibrary:CreateSection(container, title)
-	-- container can be tab or Frame
 	local parent = resolveContainer(container)
 	if not parent then return end
 
 	local SectionFrame = Instance.new("Frame", parent)
-	SectionFrame.Size = UDim2.new(1, 0, 0, 24)
+	SectionFrame.Size = UDim2.new(1, 0, 0, 22)
 	SectionFrame.BackgroundTransparency = 1
 
 	local Label = Instance.new("TextLabel", SectionFrame)
@@ -503,8 +534,13 @@ function ModernUILibrary:CreateGroup(container, title)
 	local parent = resolveContainer(container)
 	if not parent then return end
 
-	local GroupFrame = Instance.new("Frame", parent)
-	GroupFrame.Size = UDim2.new(1, 0, 0, 0) -- will grow based on children
+	local GroupWrapper = Instance.new("Frame", parent)
+	GroupWrapper.Size = UDim2.new(1, 0, 0, 8) -- will grow based on children
+	GroupWrapper.BackgroundTransparency = 1
+
+	local GroupFrame = Instance.new("Frame", GroupWrapper)
+	GroupFrame.Size = UDim2.new(1, 0, 0, 0) -- grows with children
+	GroupFrame.Position = UDim2.new(0, 0, 0, 6)
 	GroupFrame.BackgroundColor3 = Color3.fromRGB(17,17,18)
 	GroupFrame.BackgroundTransparency = 0.02
 	Instance.new("UICorner", GroupFrame).CornerRadius = UDim.new(0, 8)
@@ -517,15 +553,15 @@ function ModernUILibrary:CreateGroup(container, title)
 	inner.Position = UDim2.new(0, 6, 0, 6)
 	inner.BackgroundTransparency = 1
 	local layout = Instance.new("UIListLayout", inner)
-	layout.Padding = UDim.new(0, 8)
+	layout.Padding = UDim.new(0, 10)
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 
 	-- header label optional
 	if title and title ~= "" then
-		local header = Instance.new("TextLabel", GroupFrame)
+		local header = Instance.new("TextLabel", GroupWrapper)
 		header.Text = title
-		header.Size = UDim2.new(1, -12, 0, 20)
-		header.Position = UDim2.new(0, 10, 0, -10)
+		header.Size = UDim2.new(1, -12, 0, 18)
+		header.Position = UDim2.new(0, 12, 0, -6)
 		header.BackgroundTransparency = 1
 		header.Font = Enum.Font.GothamBold
 		header.TextSize = 13
@@ -534,12 +570,13 @@ function ModernUILibrary:CreateGroup(container, title)
 	end
 
 	-- grow group to fit children automatically
-	inner:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		local y = inner.AbsoluteSize.Y + 16
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		local y = layout.AbsoluteContentSize.Y + 24
 		GroupFrame.Size = UDim2.new(1, 0, 0, y)
+		GroupWrapper.Size = UDim2.new(1, 0, 0, y + 12)
 	end)
 
-	local group = { Frame = inner }
+	local group = { Frame = inner, Wrapper = GroupWrapper }
 	return group
 end
 
