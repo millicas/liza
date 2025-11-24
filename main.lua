@@ -1,10 +1,10 @@
 -- Modern UI Library for Roblox
--- Based on the provided HTML/CSS design
+-- Updated to match CSS design exactly
 
 local ModernUILibrary = {}
 ModernUILibrary.__index = ModernUILibrary
 
--- Theme colors
+-- Theme colors from CSS
 ModernUILibrary.Themes = {
     Dark = {
         Accent = Color3.fromRGB(30, 34, 34),
@@ -44,7 +44,7 @@ function ModernUILibrary.new(windowTitle, theme)
 end
 
 function ModernUILibrary:CreateWindow(title)
-    -- Main window frame
+    -- Main window frame - exact CSS dimensions
     self.Window = Instance.new("Frame")
     self.Window.Name = "Window"
     self.Window.Size = UDim2.new(0, 900, 0, 600)
@@ -63,7 +63,22 @@ function ModernUILibrary:CreateWindow(title)
     UIStroke.Thickness = 1
     UIStroke.Parent = self.Window
     
-    -- Header
+    -- Add shadow effect (approximation since Roblox doesn't have CSS box-shadow)
+    local Shadow = Instance.new("ImageLabel")
+    Shadow.Name = "Shadow"
+    Shadow.Size = UDim2.new(1, 40, 1, 40)
+    Shadow.Position = UDim2.new(0.5, -20, 0.5, -20)
+    Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    Shadow.BackgroundTransparency = 1
+    Shadow.Image = "rbxassetid://2615687895" -- Soft shadow image
+    Shadow.ImageColor3 = Color3.new(0, 0, 0)
+    Shadow.ImageTransparency = 0.8
+    Shadow.ScaleType = Enum.ScaleType.Slice
+    Shadow.SliceScale = 0.1
+    Shadow.ZIndex = -1
+    Shadow.Parent = self.Window
+    
+    -- Header - exact CSS styling
     local Header = Instance.new("Frame")
     Header.Name = "Header"
     Header.Size = UDim2.new(1, 0, 0, 64)
@@ -86,7 +101,8 @@ function ModernUILibrary:CreateWindow(title)
     Title.Font = Enum.Font.GothamBold
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.Parent = Header
-    
+
+    -- Close button (xhit) - exact CSS styling
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
     CloseButton.Size = UDim2.new(0, 35, 0, 35)
@@ -99,7 +115,7 @@ function ModernUILibrary:CreateWindow(title)
     CloseButton.Font = Enum.Font.GothamBold
     
     local CloseCorner = Instance.new("UICorner")
-    CloseCorner.CornerRadius = UDim.new(0, 6)
+    CloseCorner.CornerRadius = UDim.new(0, 4) -- 24% radius approximation
     CloseCorner.Parent = CloseButton
     
     local CloseStroke = Instance.new("UIStroke")
@@ -122,7 +138,7 @@ function ModernUILibrary:CreateWindow(title)
     MainContent.BackgroundTransparency = 1
     MainContent.ClipsDescendants = true
     
-    -- Sidebar
+    -- Sidebar - exact CSS styling
     self.Sidebar = Instance.new("Frame")
     self.Sidebar.Name = "Sidebar"
     self.Sidebar.Size = UDim2.new(0, 220, 1, 0)
@@ -147,7 +163,7 @@ function ModernUILibrary:CreateWindow(title)
     
     TabHolder.Parent = self.Sidebar
     
-    -- Content area
+    -- Content area with background image - exact CSS styling
     self.ContentArea = Instance.new("ScrollingFrame")
     self.ContentArea.Name = "ContentArea"
     self.ContentArea.Size = UDim2.new(1, -220, 1, 0)
@@ -159,11 +175,23 @@ function ModernUILibrary:CreateWindow(title)
     self.ContentArea.AutomaticCanvasSize = Enum.AutomaticSize.Y
     self.ContentArea.CanvasSize = UDim2.new(0, 0, 0, 0)
     
+    -- Background image (like CSS ::before pseudo-element)
+    local BackgroundImage = Instance.new("ImageLabel")
+    BackgroundImage.Name = "BackgroundImage"
+    BackgroundImage.Size = UDim2.new(1, 0, 1, 0)
+    BackgroundImage.BackgroundTransparency = 1
+    BackgroundImage.Image = "https://files.catbox.moe/h0ky7c.png"
+    BackgroundImage.ImageTransparency = 0.94 -- 0.06 opacity inverted
+    BackgroundImage.ScaleType = Enum.ScaleType.Crop
+    BackgroundImage.ZIndex = 0
+    BackgroundImage.Parent = self.ContentArea
+    
     local Content = Instance.new("Frame")
     Content.Name = "Content"
     Content.Size = UDim2.new(1, -32, 1, -32)
     Content.Position = UDim2.new(0, 16, 0, 16)
     Content.BackgroundTransparency = 1
+    Content.ZIndex = 2
     
     local ContentLayout = Instance.new("UIListLayout")
     ContentLayout.Padding = UDim.new(0, 20)
@@ -220,7 +248,7 @@ function ModernUILibrary:CreateTab(name)
     tab.Name = name
     tab.Elements = {}
     
-    -- Create tab button
+    -- Create tab button - exact CSS styling
     local TabButton = Instance.new("TextButton")
     TabButton.Name = name .. "Tab"
     TabButton.Size = UDim2.new(1, 0, 0, 44)
@@ -250,6 +278,7 @@ function ModernUILibrary:CreateTab(name)
     TabContent.Size = UDim2.new(1, 0, 0, 0)
     TabContent.BackgroundTransparency = 1
     TabContent.Visible = false
+    TabContent.ZIndex = 2
     
     local TabContentLayout = Instance.new("UIListLayout")
     TabContentLayout.Padding = UDim.new(0, 0)
@@ -257,6 +286,17 @@ function ModernUILibrary:CreateTab(name)
     TabContentLayout.Parent = TabContent
     
     TabContent.Parent = self.ContentArea:FindFirstChild("Content")
+    
+    -- Hover effects - exact CSS styling
+    TabButton.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(TabButton, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.InlineBg}):Play()
+    end)
+    
+    TabButton.MouseLeave:Connect(function()
+        if tab ~= self.ActiveTab then
+            game:GetService("TweenService"):Create(TabButton, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.SidebarBg}):Play()
+        end
+    end)
     
     -- Tab click event
     TabButton.MouseButton1Click:Connect(function()
@@ -286,7 +326,7 @@ function ModernUILibrary:SwitchTab(tab)
         t.Content.Visible = false
     end
     
-    -- Activate selected tab
+    -- Activate selected tab - exact CSS styling
     tab.Button.BackgroundColor3 = self.Theme.Accent
     tab.Button.TextColor3 = self.Theme.Text
     tab.Content.Visible = true
@@ -299,9 +339,10 @@ function ModernUILibrary:CreateSection(tab, name)
     
     local SectionFrame = Instance.new("Frame")
     SectionFrame.Name = "Section"
-    SectionFrame.Size = UDim2.new(1, 0, 0, 0)
+    SectionFrame.Size = UDim2.new(1, 0, 0, 30)
     SectionFrame.BackgroundTransparency = 1
     SectionFrame.LayoutOrder = #tab.Content:GetChildren()
+    SectionFrame.ZIndex = 2
     
     local SectionLabel = Instance.new("TextLabel")
     SectionLabel.Name = "SectionLabel"
@@ -328,6 +369,7 @@ function ModernUILibrary:CreateButton(tab, text, callback)
     ButtonFrame.Size = UDim2.new(1, 0, 0, 48)
     ButtonFrame.BackgroundColor3 = self.Theme.ElementBg
     ButtonFrame.LayoutOrder = #tab.Content:GetChildren()
+    ButtonFrame.ZIndex = 2
     
     local ButtonCorner = Instance.new("UICorner")
     ButtonCorner.CornerRadius = UDim.new(0, 10)
@@ -354,9 +396,10 @@ function ModernUILibrary:CreateButton(tab, text, callback)
     ButtonButton.Size = UDim2.new(1, 0, 1, 0)
     ButtonButton.BackgroundTransparency = 1
     ButtonButton.Text = ""
+    ButtonButton.ZIndex = 3
     ButtonButton.Parent = ButtonFrame
     
-    -- Hover effects
+    -- Hover effects - exact CSS styling
     ButtonButton.MouseEnter:Connect(function()
         game:GetService("TweenService"):Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.InlineBg}):Play()
     end)
@@ -386,6 +429,7 @@ function ModernUILibrary:CreateToggle(tab, text, default, callback)
     ToggleFrame.Size = UDim2.new(1, 0, 0, 48)
     ToggleFrame.BackgroundColor3 = self.Theme.ElementBg
     ToggleFrame.LayoutOrder = #tab.Content:GetChildren()
+    ToggleFrame.ZIndex = 2
     
     local ToggleCorner = Instance.new("UICorner")
     ToggleCorner.CornerRadius = UDim.new(0, 10)
@@ -414,6 +458,7 @@ function ModernUILibrary:CreateToggle(tab, text, default, callback)
     ToggleContainer.Position = UDim2.new(1, -60, 0.5, -12)
     ToggleContainer.AnchorPoint = Vector2.new(1, 0.5)
     ToggleContainer.BackgroundColor3 = self.Theme.InlineBg
+    ToggleContainer.ZIndex = 3
     
     local ContainerCorner = Instance.new("UICorner")
     ContainerCorner.CornerRadius = UDim.new(0, 12)
@@ -425,6 +470,7 @@ function ModernUILibrary:CreateToggle(tab, text, default, callback)
     ToggleCircle.Position = UDim2.new(0, 2, 0.5, -10)
     ToggleCircle.AnchorPoint = Vector2.new(0, 0.5)
     ToggleCircle.BackgroundColor3 = self.Theme.Circle
+    ToggleCircle.ZIndex = 4
     
     local CircleCorner = Instance.new("UICorner")
     CircleCorner.CornerRadius = UDim.new(0, 10)
@@ -436,6 +482,7 @@ function ModernUILibrary:CreateToggle(tab, text, default, callback)
     ToggleButton.Size = UDim2.new(1, 0, 1, 0)
     ToggleButton.BackgroundTransparency = 1
     ToggleButton.Text = ""
+    ToggleButton.ZIndex = 5
     ToggleButton.Parent = ToggleFrame
     
     -- Hover effects
@@ -447,7 +494,7 @@ function ModernUILibrary:CreateToggle(tab, text, default, callback)
         game:GetService("TweenService"):Create(ToggleFrame, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.ElementBg}):Play()
     end)
     
-    -- Toggle functionality
+    -- Toggle functionality - exact CSS styling
     local function UpdateToggle()
         if toggle.State then
             game:GetService("TweenService"):Create(ToggleContainer, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.Accent}):Play()
@@ -495,6 +542,7 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
     SliderFrame.Size = UDim2.new(1, 0, 0, 64)
     SliderFrame.BackgroundColor3 = self.Theme.ElementBg
     SliderFrame.LayoutOrder = #tab.Content:GetChildren()
+    SliderFrame.ZIndex = 2
     
     local SliderCorner = Instance.new("UICorner")
     SliderCorner.CornerRadius = UDim.new(0, 10)
@@ -510,6 +558,7 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
     SliderHeader.Size = UDim2.new(1, -32, 0, 20)
     SliderHeader.Position = UDim2.new(0, 16, 0, 16)
     SliderHeader.BackgroundTransparency = 1
+    SliderHeader.ZIndex = 3
     
     local SliderLabel = Instance.new("TextLabel")
     SliderLabel.Name = "SliderLabel"
@@ -542,6 +591,7 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
     SliderTrack.Position = UDim2.new(0, 16, 1, -28)
     SliderTrack.AnchorPoint = Vector2.new(0, 1)
     SliderTrack.BackgroundColor3 = self.Theme.InlineBg
+    SliderTrack.ZIndex = 3
     
     local TrackCorner = Instance.new("UICorner")
     TrackCorner.CornerRadius = UDim.new(0, 3)
@@ -551,6 +601,7 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
     SliderFill.Name = "SliderFill"
     SliderFill.Size = UDim2.new((slider.Value - slider.Min) / (slider.Max - slider.Min), 0, 1, 0)
     SliderFill.BackgroundColor3 = self.Theme.Text
+    SliderFill.ZIndex = 4
     
     local FillCorner = Instance.new("UICorner")
     FillCorner.CornerRadius = UDim.new(0, 3)
@@ -565,6 +616,7 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
     SliderButton.AnchorPoint = Vector2.new(0.5, 0.5)
     SliderButton.BackgroundColor3 = self.Theme.Circle
     SliderButton.Text = ""
+    SliderButton.ZIndex = 5
     
     local ButtonCorner = Instance.new("UICorner")
     ButtonCorner.CornerRadius = UDim.new(0, 9)
@@ -598,6 +650,21 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
         dragging = true
     end)
     
+    SliderTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            local mousePos = game:GetService("Players").LocalPlayer:GetMouse()
+            local trackAbsolutePos = SliderTrack.AbsolutePosition.X
+            local trackAbsoluteSize = SliderTrack.AbsoluteSize.X
+            
+            local relativeX = (mousePos.X - trackAbsolutePos) / trackAbsoluteSize
+            relativeX = math.clamp(relativeX, 0, 1)
+            
+            local value = slider.Min + (relativeX * (slider.Max - slider.Min))
+            UpdateSlider(value)
+        end
+    end)
+    
     game:GetService("UserInputService").InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
@@ -619,11 +686,11 @@ function ModernUILibrary:CreateSlider(tab, text, min, max, default, callback)
     end)
     
     -- Hover effects
-    SliderTrack.MouseEnter:Connect(function()
+    SliderFrame.MouseEnter:Connect(function()
         game:GetService("TweenService"):Create(SliderFrame, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.InlineBg}):Play()
     end)
     
-    SliderTrack.MouseLeave:Connect(function()
+    SliderFrame.MouseLeave:Connect(function()
         if not dragging then
             game:GetService("TweenService"):Create(SliderFrame, TweenInfo.new(0.2), {BackgroundColor3 = self.Theme.ElementBg}):Play()
         end
@@ -652,6 +719,7 @@ function ModernUILibrary:CreateKeybind(tab, text, defaultKey, callback)
     KeybindFrame.Size = UDim2.new(1, 0, 0, 48)
     KeybindFrame.BackgroundColor3 = self.Theme.ElementBg
     KeybindFrame.LayoutOrder = #tab.Content:GetChildren()
+    KeybindFrame.ZIndex = 2
     
     local KeybindCorner = Instance.new("UICorner")
     KeybindCorner.CornerRadius = UDim.new(0, 10)
@@ -684,6 +752,7 @@ function ModernUILibrary:CreateKeybind(tab, text, defaultKey, callback)
     KeybindButton.TextColor3 = self.Theme.Text
     KeybindButton.TextSize = 14
     KeybindButton.Font = Enum.Font.GothamMedium
+    KeybindButton.ZIndex = 3
     
     local ButtonCorner = Instance.new("UICorner")
     ButtonCorner.CornerRadius = UDim.new(0, 8)
@@ -696,7 +765,7 @@ function ModernUILibrary:CreateKeybind(tab, text, defaultKey, callback)
     
     KeybindButton.Parent = KeybindFrame
     
-    -- Keybind functionality
+    -- Keybind functionality - exact CSS styling
     KeybindButton.MouseButton1Click:Connect(function()
         keybind.Listening = true
         KeybindButton.Text = "..."
@@ -763,13 +832,18 @@ function ModernUILibrary:Destroy()
     end
 end
 
--- Initialize the library when required
+-- Initialize the library
 function ModernUILibrary:Init(parent)
-    if parent then
-        self.ScreenGui.Parent = parent
-    else
-        self.ScreenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+    if not parent then
+        local player = game:GetService("Players").LocalPlayer
+        if player then
+            parent = player:WaitForChild("PlayerGui")
+        else
+            parent = game:GetService("StarterGui")
+        end
     end
+    
+    self.ScreenGui.Parent = parent
     return self
 end
 
