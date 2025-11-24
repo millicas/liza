@@ -366,23 +366,23 @@ function ModernUILibrary:CreateToggle(container, text, default, callback)
 	return Frame, function(v) state = v; Update() end, function() return state end
 end
 
--- SLIDER (FINAL 48px CENTERED VERSION)
+-- SLIDER (Two-Row Layout)
 function ModernUILibrary:CreateSlider(container, text, min, max, default, callback)
 	local Frame = CreateBase(self, container)
 	if not Frame then return end
 
-	-- Slider 48px tall
-	Frame.Size = UDim2.new(1, 0, 0, 48)
+	-- Taller because slider is on second row
+	Frame.Size = UDim2.new(1, 0, 0, 58)
 
 	min = min or 0
 	max = max or 100
 	default = default or min
 
-	-- Centered Label
+	-- Top row: label
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(0.42, -12, 1, -2)
-	Label.Position = UDim2.new(0, 12, 0, 1)
+	Label.Size = UDim2.new(0.6, -12, 0, 24)
+	Label.Position = UDim2.new(0, 12, 0, 4)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
 	Label.TextSize = 15
@@ -390,11 +390,11 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 	Label.TextYAlignment = Enum.TextYAlignment.Center
 
-	-- Centered Value Text
+	-- Top row: value
 	local Val = Instance.new("TextLabel", Frame)
 	Val.Text = tostring(default)
-	Val.Size = UDim2.new(0.20, -12, 1, -2)
-	Val.Position = UDim2.new(0.78, 0, 0, 1)
+	Val.Size = UDim2.new(0.25, -12, 0, 24)
+	Val.Position = UDim2.new(0.75, 0, 0, 4)
 	Val.BackgroundTransparency = 1
 	Val.Font = Enum.Font.GothamMedium
 	Val.TextSize = 15
@@ -402,21 +402,18 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 	Val.TextXAlignment = Enum.TextXAlignment.Right
 	Val.TextYAlignment = Enum.TextYAlignment.Center
 
-	-- Track centered vertically
+	-- Slider track (SECOND ROW)
 	local Track = Instance.new("Frame", Frame)
 	Track.Size = UDim2.new(1, -36, 0, 8)
-	Track.Position = UDim2.new(0, 12, 0.5, 0)
-	Track.AnchorPoint = Vector2.new(0, 0.5)
+	Track.Position = UDim2.new(0, 12, 0, 34)
 	Track.BackgroundColor3 = self.Theme.InlineBg
 	Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 3)
 
-	-- Fill
 	local Fill = Instance.new("Frame", Track)
 	Fill.Size = UDim2.new(0, 0, 1, 0)
 	Fill.BackgroundColor3 = self.Theme.Text
 	Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 3)
 
-	-- Knob centered on track
 	local Knob = Instance.new("ImageButton", Track)
 	Knob.Size = UDim2.new(0, 16, 0, 16)
 	Knob.Position = UDim2.new(0, 0, 0.5, 0)
@@ -453,11 +450,13 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 		end
 	end)
 	UIS.InputEnded:Connect(function(inp)
-		if inp.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+		if inp.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
 	end)
 
-	-- initialize position AFTER UI loads
-	task.delay(0.05, function()
+	-- initialize knob position
+	task.delay(0.03, function()
 		if Track.AbsoluteSize.X > 1 then
 			local rel = (default - min) / math.max(1, (max - min))
 			Fill.Size = UDim2.new(rel, 0, 1, 0)
