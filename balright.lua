@@ -518,7 +518,7 @@ local Library do
         end
 
         Library.Font = CustomFont:New("InterSemiBold", "Regular", "Normal", {
-            Id = "Inter",
+            Id = "Inter.ttf",
             Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/InterSemibold.ttf"
         })
     end
@@ -3998,4 +3998,5 @@ Library:Notification("Notification without icon", 5, nil)
 Library:Notification("Notification with icon lol noob", 5, "94627324690861")
 
 getgenv().Library = Library
+
 return Library
