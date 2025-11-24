@@ -294,7 +294,7 @@ function ModernUILibrary:CreateButton(container, text, callback)
 	if not Frame then return end
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(1, -35, 1, 0)
+	Label.Size = UDim2.new(1, -12, 1, 0)
 	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
@@ -304,7 +304,7 @@ function ModernUILibrary:CreateButton(container, text, callback)
 
 	local Btn = Instance.new("TextButton", Frame)
 	Btn.BackgroundTransparency = 1
-	Btn.Size = UDim2.new(1, 0, 1, 0)
+	Btn.Size = UDim2.new(15, 0, 1, 0)
 	Btn.Text = ""
 	Btn.MouseButton1Click:Connect(function()
 		if callback then callback() end
