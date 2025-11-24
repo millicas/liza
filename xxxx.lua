@@ -366,39 +366,43 @@ function ModernUILibrary:CreateToggle(container, text, default, callback)
 	return Frame, function(v) state = v; Update() end, function() return state end
 end
 
--- SLIDER
+-- SLIDER (FINAL 48px CENTERED VERSION)
 function ModernUILibrary:CreateSlider(container, text, min, max, default, callback)
 	local Frame = CreateBase(self, container)
 	if not Frame then return end
 
-	-- Make slider taller (48px)
+	-- Slider 48px tall
 	Frame.Size = UDim2.new(1, 0, 0, 48)
 
 	min = min or 0
 	max = max or 100
 	default = default or min
 
+	-- Centered Label
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(0.42, -12, 1, 0)
-	Label.Position = UDim2.new(0, 12, 0, 0)
+	Label.Size = UDim2.new(0.42, -12, 1, -2)
+	Label.Position = UDim2.new(0, 12, 0, 1)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
 	Label.TextSize = 15
 	Label.TextColor3 = self.Theme.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
+	Label.TextYAlignment = Enum.TextYAlignment.Center
 
+	-- Centered Value Text
 	local Val = Instance.new("TextLabel", Frame)
 	Val.Text = tostring(default)
-	Val.Size = UDim2.new(0.20, -12, 1, 0)
-	Val.Position = UDim2.new(0.78, 0, 0, 0)
+	Val.Size = UDim2.new(0.20, -12, 1, -2)
+	Val.Position = UDim2.new(0.78, 0, 0, 1)
 	Val.BackgroundTransparency = 1
 	Val.Font = Enum.Font.GothamMedium
 	Val.TextSize = 15
 	Val.TextColor3 = self.Theme.Text
 	Val.TextXAlignment = Enum.TextXAlignment.Right
+	Val.TextYAlignment = Enum.TextYAlignment.Center
 
-	-- Centered track
+	-- Track centered vertically
 	local Track = Instance.new("Frame", Frame)
 	Track.Size = UDim2.new(1, -36, 0, 8)
 	Track.Position = UDim2.new(0, 12, 0.5, 0)
@@ -406,11 +410,13 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 	Track.BackgroundColor3 = self.Theme.InlineBg
 	Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 3)
 
+	-- Fill
 	local Fill = Instance.new("Frame", Track)
 	Fill.Size = UDim2.new(0, 0, 1, 0)
 	Fill.BackgroundColor3 = self.Theme.Text
 	Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 3)
 
+	-- Knob centered on track
 	local Knob = Instance.new("ImageButton", Track)
 	Knob.Size = UDim2.new(0, 16, 0, 16)
 	Knob.Position = UDim2.new(0, 0, 0.5, 0)
@@ -440,33 +446,26 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 		end
 	end)
 
-	local UserInputService = game:GetService("UserInputService")
-	UserInputService.InputChanged:Connect(function(inp)
+	local UIS = game:GetService("UserInputService")
+	UIS.InputChanged:Connect(function(inp)
 		if dragging and inp.UserInputType == Enum.UserInputType.MouseMovement then
 			updateFromX(inp.Position.X)
 		end
 	end)
-	UserInputService.InputEnded:Connect(function(inp)
+	UIS.InputEnded:Connect(function(inp)
 		if inp.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
 	end)
 
-	-- initialize position after absolute sizing
-	coroutine.wrap(function()
-		repeat task.wait() until Track.AbsoluteSize.X > 2
-		local rel = 0
-		if max - min ~= 0 then rel = (default - min) / (max - min) end
-		Fill.Size = UDim2.new(rel, 0, 1, 0)
-		Knob.Position = UDim2.new(rel, 0, 0.5, 0)
-	end)()
-
-	return Frame,
-		function(v)
-			value = v
-			updateFromX(Track.AbsolutePosition.X + (Track.AbsoluteSize.X * ((v - min) / math.max(1, (max - min)))))
-		end,
-		function()
-			return value
+	-- initialize position AFTER UI loads
+	task.delay(0.05, function()
+		if Track.AbsoluteSize.X > 1 then
+			local rel = (default - min) / math.max(1, (max - min))
+			Fill.Size = UDim2.new(rel, 0, 1, 0)
+			Knob.Position = UDim2.new(rel, 0, 0.5, 0)
 		end
+	end)
+
+	return Frame
 end
 
 
