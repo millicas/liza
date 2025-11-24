@@ -294,7 +294,7 @@ function ModernUILibrary:CreateButton(container, text, callback)
 	if not Frame then return end
 	local Label = Instance.new("TextLabel", Frame)
 	Label.Text = text
-	Label.Size = UDim2.new(1, -12, 1, 0)
+	Label.Size = UDim2.new(1, -35, 1, 0)
 	Label.Position = UDim2.new(0, 12, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Font = Enum.Font.Gotham
@@ -304,7 +304,7 @@ function ModernUILibrary:CreateButton(container, text, callback)
 
 	local Btn = Instance.new("TextButton", Frame)
 	Btn.BackgroundTransparency = 1
-	Btn.Size = UDim2.new(15, 0, 1, 0)
+	Btn.Size = UDim2.new(1, 0, 1, 0)
 	Btn.Text = ""
 	Btn.MouseButton1Click:Connect(function()
 		if callback then callback() end
@@ -370,6 +370,10 @@ end
 function ModernUILibrary:CreateSlider(container, text, min, max, default, callback)
 	local Frame = CreateBase(self, container)
 	if not Frame then return end
+
+	-- Make slider taller (48px)
+	Frame.Size = UDim2.new(1, 0, 0, 48)
+
 	min = min or 0
 	max = max or 100
 	default = default or min
@@ -394,9 +398,11 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 	Val.TextColor3 = self.Theme.Text
 	Val.TextXAlignment = Enum.TextXAlignment.Right
 
+	-- Centered track
 	local Track = Instance.new("Frame", Frame)
-	Track.Size = UDim2.new(1, -36, 0, 6)
-	Track.Position = UDim2.new(0, 12, 1, -11)
+	Track.Size = UDim2.new(1, -36, 0, 8)
+	Track.Position = UDim2.new(0, 12, 0.5, 0)
+	Track.AnchorPoint = Vector2.new(0, 0.5)
 	Track.BackgroundColor3 = self.Theme.InlineBg
 	Instance.new("UICorner", Track).CornerRadius = UDim.new(0, 3)
 
@@ -406,12 +412,12 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 	Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 3)
 
 	local Knob = Instance.new("ImageButton", Track)
-	Knob.Size = UDim2.new(0, 14, 0, 14)
+	Knob.Size = UDim2.new(0, 16, 0, 16)
 	Knob.Position = UDim2.new(0, 0, 0.5, 0)
 	Knob.AnchorPoint = Vector2.new(0.5, 0.5)
 	Knob.Image = ""
 	Knob.BackgroundColor3 = self.Theme.Circle
-	Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 7)
+	Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 8)
 	local knobStroke = Instance.new("UIStroke", Knob)
 	knobStroke.Color = self.Theme.Border
 
@@ -446,15 +452,23 @@ function ModernUILibrary:CreateSlider(container, text, min, max, default, callba
 
 	-- initialize position after absolute sizing
 	coroutine.wrap(function()
-		repeat wait() until Track.AbsoluteSize.X > 2
+		repeat task.wait() until Track.AbsoluteSize.X > 2
 		local rel = 0
 		if max - min ~= 0 then rel = (default - min) / (max - min) end
 		Fill.Size = UDim2.new(rel, 0, 1, 0)
 		Knob.Position = UDim2.new(rel, 0, 0.5, 0)
 	end)()
 
-	return Frame, function(v) value = v; updateFromX(Track.AbsolutePosition.X + (Track.AbsoluteSize.X * ((v - min) / math.max(1, (max - min))))) end, function() return value end
+	return Frame,
+		function(v)
+			value = v
+			updateFromX(Track.AbsolutePosition.X + (Track.AbsoluteSize.X * ((v - min) / math.max(1, (max - min)))))
+		end,
+		function()
+			return value
+		end
 end
+
 
 -- KEYBIND
 function ModernUILibrary:CreateKeybind(container, text, defaultKey, callback)
