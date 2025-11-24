@@ -494,29 +494,8 @@ local Library do
         end
     end
 
-    -- Custom font
-            if not isfile(Data.Id) then 
-                writefile(Data.Id, game:HttpGet(Data.Url))
-            end
-
-            local Data = {
-                name = Name,
-                faces = {
-                    {
-                        name = Name,
-                        weight = Weight,
-                        style = Style,
-                    }
-                }
-            }
-
-            writefile(`{Library.Folders.Fonts}/{Name}.font`, HttpService:JSONEncode(Data))
-        end
-
-            Id = "Inter",
-            Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/InterSemibold.ttf"
-        })
-    end
+    -- -- Custom font removed
+end
 
     Library.Holder = Instances:Create("ScreenGui", {
         Parent = gethui(),
@@ -3993,3 +3972,4 @@ Library:Notification("Notification with icon lol noob", 5, "94627324690861")
 
 getgenv().Library = Library
 return Library
+
